@@ -51,11 +51,21 @@ jupyter notebook modelado_metricas.ipynb   # Kernel -> Run All
 4. **Evaluación:** Accuracy, Precision, Recall, F1 y matriz de confusión (heatmap).
 5. **Interpretación** de negocio centrada en el costo de los falsos negativos.
 
-## Resultados
+## Resultados (set de prueba)
 
-Las métricas se calculan en el notebook sobre el set de prueba (Accuracy, Precision,
-Recall, F1 y matriz de confusión). El foco del análisis está en el **recall de la clase
-churn** y en la cantidad de **falsos negativos** (clientes que se van sin ser detectados).
+| Métrica | Valor |
+|---------|-------|
+| Accuracy | 0.779 |
+| Precision (churn) | 0.608 |
+| Recall (churn) | 0.476 |
+| F1-Score (churn) | 0.534 |
+
+**Matriz de confusión:** 920 verdaderos negativos, 115 falsos positivos, **196 falsos
+negativos** (clientes que se van y el modelo no detecta) y 178 verdaderos positivos.
+
+El modelo acierta en el ~78% de los casos, pero su **recall sobre la clase churn es 0.48**:
+deja escapar casi la mitad de los clientes que efectivamente se van. Ese es el número
+crítico para el negocio.
 
 ## Conclusión (impacto en el negocio)
 
@@ -65,8 +75,12 @@ es un cliente perdido (y retener cuesta mucho menos que adquirir uno nuevo). Un 
 positivo, en cambio, solo implica ofrecer una acción de retención a alguien que se iba a
 quedar: un costo bajo y acotado.
 
-Por eso se prioriza **maximizar el recall** aun a costa de algo de precision, y el
-**Accuracy por sí solo resulta engañoso** con clases desbalanceadas. El modelo se usa para
-generar una lista de clientes en riesgo y dirigir la retención a los segmentos más
-churn-propensos (contratos *month-to-month*, `tenure` bajo, fibra óptica, pago con
-*electronic check*).
+En este caso el modelo deja **196 falsos negativos**: 196 clientes que se fueron sin que
+el modelo los alertara. Por eso se prioriza **maximizar el recall** aun a costa de algo de
+precision, y el **Accuracy (0.78) por sí solo resulta engañoso** —con un 26.5% de churn,
+un modelo que dijera "nadie se va" tendría ~73% de accuracy y recall 0—. Si el negocio
+necesita capturar más churners, se puede **bajar el umbral de decisión** (por debajo de
+0.5) para subir el recall aceptando más falsos positivos, un trade-off favorable dado el
+bajo costo del FP. El modelo se usa para generar una lista de clientes en riesgo y dirigir
+la retención a los segmentos más churn-propensos (contratos *month-to-month*, `tenure`
+bajo, fibra óptica, pago con *electronic check*).
